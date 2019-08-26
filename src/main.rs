@@ -1,3 +1,5 @@
+use pixelrust::CharCell;
+
 fn main() {
 
     const KERNEL9: [i8; 3] = [3, 3, 3];
