@@ -1,4 +1,4 @@
-use pixelrust::CharCell;
+mod structs;
 
 fn main() {
 

@@ -1,6 +1,6 @@
 use image::{self, imageops::blur, png::PNGReader::Read, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba};
 use exoquant::*;
-use pixelrust::structs::{Kernel, CharCell};
+mod structs;
 
 
 const ASCII_CHARS: [char;7] = ['8', '%', '=', '+', '@', 'W', 'X'];
