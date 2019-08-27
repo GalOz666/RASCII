@@ -1,9 +1,12 @@
-use image::{self, imageops::blur,
-            png::PNGReader::Read,
-            GenericImage, DynamicImage,
-            ImageDecoder, ImageBuffer,
-            GenericImageView, Rgb};
+use image::{self, imageops::blur, png::PNGReader::Read, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba};
 use exoquant::*;
+
+pub struct CharCell {
+    x: usize,
+    y: usize,
+    color: [u32; 3],
+    ascii: char
+}
 
 pub struct Kernel {
 
@@ -11,12 +14,12 @@ pub struct Kernel {
 
 }
 
-pub trait KernelOps<T, F>
+pub trait KernelOperations<T, F>
     where T: FromPrimitive,
-          F: GenericImage
+          F: GenericImage + GenericImageView
     {
 
-    fn get_kernel_locators(&self, &start_pos: &[usize; 2]) -> vec<[usize; 2]> {
+    fn get_kernel_locators(&self, start_pos: &[usize; 2]) -> vec<[usize; 2]> {
         let mut kern : Vec<usize> = Vec::new();
         for outer_num in 0..self.kernel {
             for inner_num in 0..self.kernel {
@@ -26,22 +29,40 @@ pub trait KernelOps<T, F>
         }
     }
 
+    fn kernel_colors(&self, &kernel_locator: vec<[usize;2]>, image: &F) -> vec<vec<T>>;
 
-    fn kernel_colors(self, image: F) -> vec<vec<T>>;
+    fn dominant_color_by_kernel(&self, image: &F) -> vec<T>{ // todo: fill this with real func
+        let colors = self.kernel_colors(image);
+        colors[1]
+    }
+
 }
 
-fn dominant_color_by_kernel(){
-    ()
+// for grey-scale images
+impl KernelOperations<u8, RgbImage> for Kernel {
+    fn kernel_colors(&self, &kernel_locator: vec<[usize; 2]>, image: &RgbImage) -> vec<vec<u8>> {
+        assert!(kernel_locator.len() as u32 = self.kernel);
+
+        let mut colors = Vec::new();
+
+        for (x,y) in kernel_locator {
+                pixel: &Rgb<u8> = image.get_pixel(x, y);
+                let pixel(num) = grey_color;
+                colors.push(pixel);
+
+        }
+        colors
+    }
 }
+
+fn test(image: DynamicImage){
+    let you = image.as_rgb8().unwrap();
+    let me = you.get_pixel(8, 8);
 }
+    // image.as_rgb8().unwrap()
+
 const ASCII_CHARS: [char;7] = ['8', '%', '=', '+', '@', 'W', 'X'];
 
-pub struct CharCell {
-    x: usize,
-    y: usize,
-    color: [u32; 3],
-    ascii: char
-}
 
 
 pub mod pixel_analysis {
@@ -115,9 +136,4 @@ fn quantized_image(path: &str, num_colors: usize) -> (Vec<Color>, Vec<u8>) {
 
 
 
-                                        // image.as_rgb8().unwrap()
 
-
-fn dominant_color_by_kernel(){
-    ()
-}
