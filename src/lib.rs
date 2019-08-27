@@ -21,7 +21,8 @@ pub mod pixel_analysis {
 
 
 /// kernel based RGB color averaging for each cell:
-// img.get_pixel_mut(x, y) for getting a pixel
+// img.get_pixel_mut(x, y) for getting a pixe
+    // enumerate_pixels_mut for (x, y, pixel) !
 
 /// different shades of the same color will be the same character
 /// with each color having a unique character assignment (character assignment is unique on each run - as it's more fun)
@@ -43,16 +44,16 @@ pub mod pixel_analysis {
 // I think we can do it with O:read image::png::PNGDecoder:new(raw_image)?
 
 /// process image (gaussian blur)
-pub fn initial_image_processing<A, B>(path: &str) -> (DynamicImage, DynamicImage) {
+pub fn initial_image_processing(path: &str, &kernel: u32) -> (DynamicImage, DynamicImage) {
 
     // add error handling
     // add shrinking mechanism if the amount of cells exceeds terminal full screen (in current resolution?)
-
     let img = image::open(&path).unwrap();
     // get side and see that it fits with kernel:
-    let dim = image::image_dimensions(&path).unwrap();
-    let w = dim.0 - (dim.0%9); // TODO: replace by kernel value...
-    let h = dim.1 - (dim.1%9); // TODO: replace by kernel value...
+    kernel_abs_len = kernel.into_iter().flatten();
+    let dim = image::image_dimensions(&path).unwrap(); // might need to take this outside for reuse
+    let w = dim.0 - (dim.0%kernel); // TODO: replace by kernel value...
+    let h = dim.1 - (dim.1%kernel); // TODO: replace by kernel value...
     cropped_img = img.thumbnail(w, h).grayscale();
     (cropped_img, img)
 
@@ -65,6 +66,16 @@ fn quantized_image(path: &str, num_colors: usize) -> (Vec<Color>, Vec<u8>) {
         image.pixels, image.width, num_colors,
       &optimizer::KMeans, &ditherer::FloydSteinberg::new());
     return (palette, indexed_data)
+}
+
+fn get_kernel_locators(&kernel: u32, &start_pos: [usize; 2]) -> vec {
+    let mut kern = Vec::new();
+    for outer_num in 0..kernel{
+        for inner_num in 0..kernel {
+            kern.push([start_pos.0+outer_num, start_pos.1+inner_num]);
+        }
+    kern
+    }
 }
 
 mod pixle_mapping {

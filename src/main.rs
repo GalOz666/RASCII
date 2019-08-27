@@ -2,8 +2,11 @@ use pixelrust::CharCell;
 
 fn main() {
 
-    const KERNEL9: [i8; 3] = [3, 3, 3];
-    const KERNEL25: [i8; 5] = [5, 5, 5, 5, 5];
+    const KERNEL9: u32 = 9; // for now...
+
+//
+
+
 
  // get image and args from environment (terminal)
 
