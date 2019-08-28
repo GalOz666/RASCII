@@ -65,7 +65,6 @@ pub fn grey_to_ascii(color: u8, ascii: vec<char>) -> char {
 
 
 
-
 /// save ascii to .png image (other formats maybe too?)
 // get a buffer: let mut imgbuf = image::ImageBuffer::new(imgx, imgy);
 // and save it imgbuf.save("bla bla.png").unwrap();

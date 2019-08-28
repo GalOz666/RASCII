@@ -1,5 +1,6 @@
 use image::{self, imageops::blur, png::PNGReader::Read, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, GrayImage};
 use pixelrust::grey_to_ascii;
+use counter::Counter;
 
 pub struct CharCell {
     x: usize,
@@ -32,11 +33,7 @@ pub trait KernelOperations<T, F>
 
     fn kernel_colors(&self, kernel_locator: &vec<[usize;2]>, image: F) -> vec<vec<T>>;
 
-    fn dominant_color_by_kernel(&self, kernel_locator: &vec<[usize;2]>, image: F) -> vec<T>{
-        // todo: fill this with real func
-        let colors = self.kernel_colors(image);
-        [100, 100, 100]
-    }
+    fn dominant_color_by_kernel(&self, kernel_locator: &vec<[usize;2]>, image: &F) -> vec<T>;
 
 }
 
@@ -50,18 +47,24 @@ impl Kernel {
 }
 
 // for grey-scale images and RGB!
-impl KernelOperations<u8, &DynamicImage> for Kernel {         // image.as_rgb8().unwrap()
+impl KernelOperations<u8, &DynamicImage> for Kernel {
+    // image.as_rgb8().unwrap()
     fn kernel_colors(&self, kernel_locator: &vec<[usize; 2]>, image: &DynamicImage) -> vec<vec<u8>> {
         assert!(kernel_locator.len() as u32 = self.kernel);
 
         let mut colors = Vec::new();
 
-        for (x,y) in kernel_locator {
-                pixel = image.get_pixel(x, y);
-                let pixel(num) = grey_color;
-                colors.push(*pixel);
+        for (x, y) in kernel_locator {
+            pixel = image.get_pixel(x, y);
+            let pixel(num) = grey_color;
+            colors.push(*pixel);
         }
         colors
+    }
+    fn dominant_color_by_kernel(&self, kernel_locator: &vec<[usize; 2]>, image: &DynamicImage) -> vec<u8> {
+        let colors: vec<vec<u8>> = self.kernel_colors(image);
+        let counter: Counter<_, i8> = colors.collect();
+        counter[0][0]
     }
 }
 
