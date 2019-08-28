@@ -1,17 +1,17 @@
-mod structs;
+use std::env::args;
+use image;
+use crate::structs::{CharCell, Kernel};
 
-/// each mapped to a character (assignment will be semi-random as it's more fun!)
-const ASCII_CHARS: [char;7] = ['8', '%', '=', '+', '@', 'W', 'X'];
+
+const ASCII_CHARS: [char;11] = [':', '8', '%', '=', ',', '@', '.', 'X', '&', '~', 'S'];
 
 fn main() {
-
-    kernel = structs::Kernel::new(9);
-
-//
-
-
-
- // get image and args from environment (terminal)
+    /// get path fron env
+    args = args().collect();
+    /// create Dynamic image
+    image::open(&args[1]);
+    kernel = Kernel::new(9);
+    char_cell = CharCell;
 
  // spawn threads to handle pixle analysis and produce terminal cells
 
