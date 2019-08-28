@@ -1,8 +1,11 @@
 mod structs;
 
+/// each mapped to a character (assignment will be semi-random as it's more fun!)
+const ASCII_CHARS: [char;7] = ['8', '%', '=', '+', '@', 'W', 'X'];
+
 fn main() {
 
-    const KERNEL9: u32 = 9; // for now...
+    kernel = structs::Kernel::new(9);
 
 //
 

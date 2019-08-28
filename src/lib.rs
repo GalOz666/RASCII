@@ -1,10 +1,10 @@
-use image::{self, imageops::blur, png::PNGReader::Read, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba};
+use image::{self, imageops::blur, png::PNGReader::Read, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba, GrayImage,
+FilterType::*};
 use exoquant::*;
-mod structs;
+pub use structs;
 
 
-const ASCII_CHARS: [char;7] = ['8', '%', '=', '+', '@', 'W', 'X'];
-
+const MAX_CHARS: u16 = 80;
 
 pub mod pixel_analysis {
 
@@ -33,33 +33,34 @@ pub mod pixel_analysis {
 // I think we can do it with O:read image::png::PNGDecoder:new(raw_image)?
 
 /// process image (gaussian blur)
-pub fn initial_image_processing(path: &str, kernel: &u32) -> (DynamicImage, DynamicImage) {
-
+pub fn initial_image_processing(path: &str, kernel: &structs::Kernel) -> (DynamicImage, GrayImage) {
     // add error handling
-    // add shrinking mechanism if the amount of cells exceeds terminal full screen (in current resolution?)
+    let kern_factor = kernel.kernel();
+
     let img = image::open(&path).unwrap();
     // get side and see that it fits with kernel:
-    kernel_abs_len = kernel.into_iter().flatten();
-    let dim = image::image_dimensions(&path).unwrap(); // might need to take this outside for reuse
-    let w = dim.0 - (dim.0%kernel);
-    let h = dim.1 - (dim.1%kernel);
-    cropped_img = img.thumbnail(w, h).grayscale();
-    (cropped_img, img)
+    let dimensions = image::image_dimensions(&path).unwrap();
+    // i.e., if the size of the picture will be bigger than the maximum amount of characters in the terminal
+    let w: u16;
+    if dimensions.0 > MAX_CHARS as u32 * kern_factor {
+        w = MAX_CHARS*kern_size
+    } else {
+        w = dimensions.0 - (dimensions.0%kern_factor);
+    }
+    let h = dimensions.1 - (dimensions.1%kern_factor);
+    cropped_rgb: DynamicImage  = img.resize(w as u32, h,  Gaussian);
+    cropped_grey: GrayImage  = cropped_rgb.to_luma;
+    (cropped_img, cropped_grey)
 
 }
 
 
-mod pixle_mapping {
-    fn pixle_map() {
-        ()
-    }
-
-    fn colored_pmap() {
-        ()
-    }
+pub fn grey_to_ascii(color: vec<u8>, ascii: vec<char>) -> char {
+    '#'
 }
 
-/// each mapped to a character (assignment will be semi-random as it's more fun!)
+
+
 
 /// save ascii to .png image (other formats maybe too?)
 // get a buffer: let mut imgbuf = image::ImageBuffer::new(imgx, imgy);
@@ -73,7 +74,6 @@ fn quantized_image(path: &str, num_colors: usize) -> (Vec<Color>, Vec<u8>) {
       &optimizer::KMeans, &ditherer::FloydSteinberg::new());
     return (palette, indexed_data)
 }
-
 
 
 

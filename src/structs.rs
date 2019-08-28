@@ -1,4 +1,5 @@
-use image::{self, imageops::blur, png::PNGReader::Read, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba};
+use image::{self, imageops::blur, png::PNGReader::Read, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, GrayImage};
+use pixelrust::grey_to_ascii;
 
 pub struct CharCell {
     x: usize,
@@ -18,6 +19,7 @@ pub trait KernelOperations<T, F>
           F: GenericImage + GenericImageView
     {
 
+        // test that the size conforms to kernel: u32 size
     fn get_kernel_locators(&self, start_pos: &[usize; 2]) -> vec<[usize; 2]> {
         let mut kern : Vec<usize> = Vec::new();
         for outer_num in 0..self.kernel {
@@ -28,28 +30,51 @@ pub trait KernelOperations<T, F>
         }
     }
 
-    fn kernel_colors(&self, &kernel_locator: vec<[usize;2]>, image: &F) -> vec<vec<T>>;
+    fn kernel_colors(&self, kernel_locator: &vec<[usize;2]>, image: F) -> vec<vec<T>>;
 
-    fn dominant_color_by_kernel(&self, image: &F) -> vec<T>{ // todo: fill this with real func
+    fn dominant_color_by_kernel(&self, kernel_locator: &vec<[usize;2]>, image: F) -> vec<T>{
+        // todo: fill this with real func
         let colors = self.kernel_colors(image);
-        colors[1]
+        [100, 100, 100]
     }
 
 }
 
-// for grey-scale images
-impl KernelOperations<u8, RgbImage> for Kernel {                 // image.as_rgb8().unwrap()
-    fn kernel_colors(&self, &kernel_locator: vec<[usize; 2]>, image: &RgbImage) -> vec<vec<u8>> {
+impl Kernel {
+    pub fn new(num: u32) -> Self {
+        Kernel { kernel: num }
+    }
+    pub fn kernel(&self) -> u32{
+        self.kernel
+    }
+}
+
+// for grey-scale images and RGB!
+impl KernelOperations<u8, &DynamicImage> for Kernel {         // image.as_rgb8().unwrap()
+    fn kernel_colors(&self, kernel_locator: &vec<[usize; 2]>, image: &DynamicImage) -> vec<vec<u8>> {
         assert!(kernel_locator.len() as u32 = self.kernel);
 
         let mut colors = Vec::new();
 
         for (x,y) in kernel_locator {
-                pixel: &Rgb<u8> = image.get_pixel(x, y);
+                pixel = image.get_pixel(x, y);
                 let pixel(num) = grey_color;
-                colors.push(pixel);
-
+                colors.push(*pixel);
         }
         colors
     }
 }
+
+impl CharCell {                                         //image::new(PATH) to_luma
+    fn new(kernel: Kernel, start_pos: &[usize; 2], image: &DynamicImage, grey: &GrayImage, ascii: vec<char>) -> Self{
+        locators = kernel.get_kernel_locators(start_pos);
+        let (x, y) = locators[0];
+        let x = (x+kernel.kernel())/9;
+        let y = (y+kernel.kernel())/9;
+        let color = kernel.dominant_color_by_kernel(locators, image);
+        let ascii = grey_to_ascii(grey, ascii); // still doesn't work
+        CharCell {x, y, color, ascii}
+    }
+}
+
+
