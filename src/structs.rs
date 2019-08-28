@@ -1,4 +1,5 @@
-use image::{self, imageops::blur, png::PNGReader::Read, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, GrayImage};
+use image::{self, imageops::blur, png::PNGReader::Read, GenericImage, DynamicImage, ImageDecoder,
+            ImageBuffer, GenericImageView, Rgb, RgbImage, GrayImage, ImageLuma8};
 use pixelrust::grey_to_ascii;
 use counter::Counter;
 
@@ -46,9 +47,7 @@ impl Kernel {
     }
 }
 
-// for grey-scale images and RGB!
 impl KernelOperations<u8, &DynamicImage> for Kernel {
-    // image.as_rgb8().unwrap()
     fn kernel_colors(&self, kernel_locator: &vec<[usize; 2]>, image: &DynamicImage) -> vec<vec<u8>> {
         assert!(kernel_locator.len() as u32 = self.kernel);
 
@@ -56,13 +55,18 @@ impl KernelOperations<u8, &DynamicImage> for Kernel {
 
         for (x, y) in kernel_locator {
             pixel = image.get_pixel(x, y);
-            let pixel(num) = grey_color;
-            colors.push(*pixel);
+            let pixel(num) = num;
+            colors.push(num);
         }
         colors
     }
     fn dominant_color_by_kernel(&self, kernel_locator: &vec<[usize; 2]>, image: &DynamicImage) -> vec<u8> {
-        let colors: vec<vec<u8>> = self.kernel_colors(image);
+        img = if let ImageLuma8(img) = image {
+            img
+        } else {
+            image
+        };
+        let colors: vec<vec<u8>> = self.kernel_colors(img);
         let counter: Counter<_, i8> = colors.collect();
         counter[0][0]
     }
@@ -76,8 +80,7 @@ impl CharCell {
         let x = (x + kernel.kernel()) / 9;
         let y = (y + kernel.kernel()) / 9;
         let color = kernel.dominant_color_by_kernel(locators, image);
-        let grey_img(grey) = grey;
-        let grey_color = kernel.dominant_color_by_kernel(locators, grey);
+        let grey_color = kernel.dominant_color_by_kernel(locators, grey_image);
         let ascii = grey_to_ascii(grey_color[0], ascii);
         return CharCell { x, y, color, ascii }
     }
