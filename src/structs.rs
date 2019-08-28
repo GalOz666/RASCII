@@ -65,16 +65,17 @@ impl KernelOperations<u8, &DynamicImage> for Kernel {         // image.as_rgb8()
     }
 }
 
-impl CharCell {                                         //image::new(PATH) to_luma
-    fn new(kernel: Kernel, start_pos: &[usize; 2], image: &DynamicImage, grey: &GrayImage, ascii: vec<char>) -> Self{
+impl CharCell {
+                                                        //image::new(PATH)          to_luma
+    fn new(kernel: Kernel, start_pos: &[usize; 2], image: &DynamicImage, grey_img: &ImageLuma8, ascii: &vec<char>) -> Self {
         locators = kernel.get_kernel_locators(start_pos);
         let (x, y) = locators[0];
-        let x = (x+kernel.kernel())/9;
-        let y = (y+kernel.kernel())/9;
+        let x = (x + kernel.kernel()) / 9;
+        let y = (y + kernel.kernel()) / 9;
         let color = kernel.dominant_color_by_kernel(locators, image);
-        let ascii = grey_to_ascii(grey, ascii); // still doesn't work
-        CharCell {x, y, color, ascii}
+        let grey_img(grey) = grey;
+        let grey_color = kernel.dominant_color_by_kernel(locators, grey);
+        let ascii = grey_to_ascii(grey_color[0], ascii);
+        return CharCell { x, y, color, ascii }
     }
 }
-
-
