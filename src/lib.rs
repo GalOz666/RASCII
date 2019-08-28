@@ -1,7 +1,7 @@
 use image::{self, imageops::blur, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba, GrayImage,
 FilterType::*};
 use math::round;
-mod structs;
+pub mod structs;
 
 
 const MAX_CHARS: u16 = 80;
@@ -15,13 +15,13 @@ pub fn initial_image_processing(path: &str, kernel: &structs::Kernel) -> (Dynami
     let dimensions = image::image_dimensions(&path).unwrap();
     // i.e., if the size of the picture will be bigger than the maximum amount of characters in the terminal
 
-    let w: u16 = if dimensions.0 > MAX_CHARS as u32 * kern_factor {
-        MAX_CHARS*kern_size
+    let w: u32 = if dimensions.0 > MAX_CHARS as u32 * kern_factor {
+        MAX_CHARS as u32 * kern_factor
     } else {
         (dimensions.0 - (dimensions.0%kern_factor)).parse()
     };
     let h = dimensions.1 - (dimensions.1%kern_factor);
-    let cropped_rgb: DynamicImage  = img.resize(w as u32, h,  Gaussian);
+    let cropped_rgb: DynamicImage  = img.resize(w , h,  Gaussian);
     let cropped_grey: GrayImage  = cropped_rgb.to_luma;
     (cropped_img, cropped_grey)
 
