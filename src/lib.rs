@@ -70,13 +70,13 @@ pub fn grey_to_ascii(color: u8, ascii: vec<char>) -> char {
 // and save it imgbuf.save("bla bla.png").unwrap();
 
 // maybe not needed....
-fn quantized_image(path: &str, num_colors: usize) -> (Vec<Color>, Vec<u8>) {
-    let image = image::open(&path).unwrap();
-    let (palette, indexed_data) = convert_to_indexed(
-        image.pixels, image.width, num_colors,
-      &optimizer::KMeans, &ditherer::FloydSteinberg::new());
-    return (palette, indexed_data)
-}
+//fn quantized_image(path: &str, num_colors: usize) -> (Vec<Color>, Vec<u8>) {
+//    let image = image::open(&path).unwrap();
+//    let (palette, indexed_data) = convert_to_indexed(
+//        image.pixels, image.width, num_colors,
+//      &optimizer::KMeans, &ditherer::FloydSteinberg::new());
+//    return (palette, indexed_data)
+//}
 
 pub fn write_to_term(char_cell: CharCell){
     ()
