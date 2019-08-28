@@ -1,7 +1,7 @@
-use image::{self, imageops::blur, png::PNGReader::Read, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba, GrayImage,
+use image::{self, imageops::blur, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba, GrayImage,
 FilterType::*};
 use math::round;
-pub use structs;
+mod structs;
 
 
 const MAX_CHARS: u16 = 80;
@@ -21,13 +21,13 @@ pub fn initial_image_processing(path: &str, kernel: &structs::Kernel) -> (Dynami
         (dimensions.0 - (dimensions.0%kern_factor)).parse()
     };
     let h = dimensions.1 - (dimensions.1%kern_factor);
-    cropped_rgb: DynamicImage  = img.resize(w as u32, h,  Gaussian);
-    cropped_grey: GrayImage  = cropped_rgb.to_luma;
+    let cropped_rgb: DynamicImage  = img.resize(w as u32, h,  Gaussian);
+    let cropped_grey: GrayImage  = cropped_rgb.to_luma;
     (cropped_img, cropped_grey)
 
 }
 
-pub fn grey_to_ascii(color: u8, ascii: vec<char>) -> char {
+pub fn grey_to_ascii(color: u8, ascii: Vec<char>) -> char {
     let ascii_len = ascii.len();
     let metre = 255/ascii_len;
     let value = color as f64 / metre as f64;
@@ -35,7 +35,7 @@ pub fn grey_to_ascii(color: u8, ascii: vec<char>) -> char {
     ascii[index as uzie]
 }
 
-pub fn write_to_term(char_cell: CharCell){
+pub fn write_to_term(char_cell: structs::CharCell){
     ()
 }
 

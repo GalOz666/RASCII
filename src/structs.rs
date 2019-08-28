@@ -1,4 +1,4 @@
-use image::{self, imageops::blur, png::PNGReader::Read, GenericImage, DynamicImage, ImageDecoder,
+use image::{self, imageops::blur,  GenericImage, DynamicImage, ImageDecoder,
             ImageBuffer, GenericImageView, Rgb, RgbImage, GrayImage, ImageLuma8};
 use pixelrust::grey_to_ascii;
 use counter::Counter;
@@ -6,7 +6,7 @@ use counter::Counter;
 pub struct CharCell {
     x: usize,
     y: usize,
-    color: [u32; 3],
+    color: Vec<u8>,
     ascii: char
 }
 
@@ -22,19 +22,19 @@ pub trait KernelOperations<T, F>
     {
 
         // test that the size conforms to kernel: u32 size
-    fn get_kernel_locators(&self, start_pos: &[usize; 2]) -> vec<[usize; 2]> {
-        let mut kern : Vec<usize> = Vec::new();
+    fn get_kernel_locators(&self, start_pos: &[usize; 2]) -> Vec<[usize; 2]> {
+        let mut kern : Vec<[usize; 2]> = Vec::new();
         for outer_num in 0..self.kernel {
             for inner_num in 0..self.kernel {
                 kern.push([start_pos.0+outer_num, start_pos.1+inner_num]);
             }
+         }
         kern
-        }
     }
 
-    fn kernel_colors(&self, kernel_locator: &vec<[usize;2]>, image: F) -> vec<vec<T>>;
+    fn kernel_colors(&self, kernel_locator: &Vec<[usize;2]>, image: F) -> Vec<Vec<T>>;
 
-    fn dominant_color_by_kernel(&self, kernel_locator: &vec<[usize;2]>, image: &F) -> vec<T>;
+    fn dominant_color_by_kernel(&self, kernel_locator: &Vec<[usize;2]>, image: &F) -> Vec<T>;
 
 }
 
@@ -48,7 +48,7 @@ impl Kernel {
 }
 
 impl KernelOperations<u8, &DynamicImage> for Kernel {
-    fn kernel_colors(&self, kernel_locator: &vec<[usize; 2]>, image: &DynamicImage) -> vec<vec<u8>> {
+    fn kernel_colors(&self, kernel_locator: &Vec<[usize; 2]>, image: &DynamicImage) -> Vec<Vec<u8>> {
         assert!(kernel_locator.len() as u32 = self.kernel);
 
         let mut colors = Vec::new();
@@ -60,13 +60,13 @@ impl KernelOperations<u8, &DynamicImage> for Kernel {
         }
         colors
     }
-    fn dominant_color_by_kernel(&self, kernel_locator: &vec<[usize; 2]>, image: &DynamicImage) -> vec<u8> {
+    fn dominant_color_by_kernel(&self, kernel_locator: &Vec<[usize; 2]>, image: &DynamicImage) -> Vec<u8> {
         img = if let ImageLuma8(img) = image {
             img
         } else {
             image
         };
-        let colors: vec<vec<u8>> = self.kernel_colors(img);
+        let colors: Vec<Vec<u8>> = self.kernel_colors(img);
         let counter: Counter<_, i8> = colors.collect();
         counter[0][0]
     }
@@ -74,7 +74,7 @@ impl KernelOperations<u8, &DynamicImage> for Kernel {
 
 impl CharCell {
                                                         //image::new(PATH)          to_luma
-    fn new(kernel: Kernel, start_pos: &[usize; 2], image: &DynamicImage, grey_img: &ImageLuma8, ascii: &vec<char>) -> Self {
+    fn new(kernel: Kernel, start_pos: &[usize; 2], image: &DynamicImage, grey_img: &ImageLuma8, ascii: &Vec<char>) -> Self {
         locators = kernel.get_kernel_locators(start_pos);
         let (x, y) = locators[0];
         let x = (x + kernel.kernel()) / 9;
