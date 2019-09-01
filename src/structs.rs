@@ -3,7 +3,7 @@ use image::{self, imageops::blur,  GenericImage, DynamicImage, ImageDecoder,
 use crate::grey_to_ascii;
 use counter::Counter;
 use std::array::FixedSizeArray;
-use num::FromPrimitive;
+use std::num::FromPrimitive;
 
 pub struct CharCell {
     x: usize,
@@ -20,7 +20,7 @@ pub struct Kernel {
 
 struct BinaryKernel {
 
-    matrix: Vec<Vec<bool>>
+    pub matrix: Vec<Vec<bool>>
 }
 
 pub trait KernelOperations<T, F>
@@ -60,10 +60,10 @@ impl Kernel {
             let mut inner: Vec<bool> = Vec::with_capacity(self.kernel as usize);
             for _ in 0..self.kernel {
                 inner.push(0 as bool);
-            outer_vec.push(inner);
+            matrix.push(inner);
             }
         }
-        BinaryKernel {matrix}
+        BinaryKernel::new{matrix}
     }
 }
 
@@ -81,7 +81,7 @@ impl KernelOperations<u8, &DynamicImage> for Kernel {
         colors
     }
     fn dominant_color_by_kernel(&self, kernel_locator: &Vec<[usize; 2]>, image: &DynamicImage) -> Vec<u8> {
-        img = if let ImageLuma8(img) = image {
+        let img = if let ImageLuma8(img) = image {
             img
         } else {
             image
@@ -89,6 +89,15 @@ impl KernelOperations<u8, &DynamicImage> for Kernel {
         let colors: Vec<Vec<u8>> = self.kernel_colors(img);
         let counter: Counter<_, i8> = colors.collect();
         counter[0][0]
+    }
+}
+
+impl BinaryKernel {
+    pub fn matrix(&self) -> &Vec<Vec<bool>>{
+        &self.matrix
+    }
+    pub fn new(matrix: Vec<Vec<bool>>) -> Self {
+        BinaryKernel{matrix}
     }
 }
 

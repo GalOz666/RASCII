@@ -42,9 +42,9 @@ pub fn write_to_term(char_cell: structs::CharCell){
 }
 
 pub fn highpass_filter(image: DynamicImage) -> DynamicImage {
-    small: f32 = -1.0/9.0;
-    big: f32 = 8.0/9.0;
-    image.filter3x3([small, small, small, small, big, small, small, small, small])
+    let small: f32 = -1.0/9.0;
+    let big: f32 = 8.0/9.0;
+    image.filter3x3(&[small, small, small, small, big, small, small, small, small])
 }
 
 pub fn get_approximate_shape_from_kernel(kernel: Kernel, binary_kernel: Vec<Vec<bool>>){
