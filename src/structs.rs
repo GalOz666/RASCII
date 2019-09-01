@@ -2,8 +2,7 @@ use image::{self, imageops::blur,  GenericImage, DynamicImage, ImageDecoder,
             ImageBuffer, GenericImageView, Rgb, RgbImage, GrayImage, ImageLuma8};
 use crate::grey_to_ascii;
 use counter::Counter;
-use std::array::FixedSizeArray;
-use std::num::FromPrimitive;
+use std::num::NonZeroU8;
 
 pub struct CharCell {
     x: usize,
@@ -15,7 +14,6 @@ pub struct CharCell {
 pub struct Kernel {
 
     kernel: u32
-
 }
 
 struct BinaryKernel {
@@ -24,7 +22,7 @@ struct BinaryKernel {
 }
 
 pub trait KernelOperations<T, F>
-    where T: FromPrimitive,
+    where T: NonZeroU8,
           F: GenericImage + GenericImageView
     {
 
@@ -74,19 +72,14 @@ impl KernelOperations<u8, &DynamicImage> for Kernel {
         let mut colors = Vec::new();
 
         for (x, y) in kernel_locator {
-            pixel = image.get_pixel(x, y);
+            let pixel = image.get_pixel(x, y);
             let pixel(num) = num;
             colors.push(num);
         }
         colors
     }
     fn dominant_color_by_kernel(&self, kernel_locator: &Vec<[usize; 2]>, image: &DynamicImage) -> Vec<u8> {
-        let img = if let ImageLuma8(img) = image {
-            img
-        } else {
-            image
-        };
-        let colors: Vec<Vec<u8>> = self.kernel_colors(img);
+        let colors: Vec<Vec<u8>> = self.kernel_colors(kernel_locator, image);
         let counter: Counter<_, i8> = colors.collect();
         counter[0][0]
     }
@@ -102,14 +95,18 @@ impl BinaryKernel {
 }
 
 impl CharCell {
-                                                        //image::new(PATH)          to_luma
-    pub fn new(kernel: Kernel, start_pos: [usize; 2], image: &DynamicImage, grey_img: &ImageLuma8, ascii: &[char;11]) -> Self {
-        locators = kernel.get_kernel_locators(start_pos);
+                                                        //image::new(PATH)              to_luma
+    pub fn new(kernel: Kernel, start_pos: [usize; 2], image: &DynamicImage, grey_image: &DynamicImage, ascii: &[char;11]) -> Self {
+        match image {
+            ImageLuma8(img) => (),
+            _ => panic!('image is not grey scale!)
+        }
+        let locators = kernel.get_kernel_locators(start_pos);
         let (x, y) = locators[0];
         let x = (x + kernel.kernel()) / 9;
         let y = (y + kernel.kernel()) / 9;
-        let color = kernel.dominant_color_by_kernel(locators, image);
-        let grey_color = kernel.dominant_color_by_kernel(locators, grey_image);
+        let color = kernel.dominant_color_by_kernel(&locators, image);
+        let grey_color = kernel.dominant_color_by_kernel(&locators, grey_image);
         let ascii = grey_to_ascii(grey_color[0], ascii);
         return CharCell { x, y, color, ascii }
     }
