@@ -1,7 +1,9 @@
 use image::{self, imageops::blur,  GenericImage, DynamicImage, ImageDecoder,
             ImageBuffer, GenericImageView, Rgb, RgbImage, GrayImage, ImageLuma8};
-use pixelrust::grey_to_ascii;
+use crate::grey_to_ascii;
 use counter::Counter;
+use std::array::FixedSizeArray;
+use num::FromPrimitive;
 
 pub struct CharCell {
     x: usize,
@@ -16,13 +18,18 @@ pub struct Kernel {
 
 }
 
+struct BinaryKernel {
+
+    matrix: Vec<Vec<bool>>
+}
+
 pub trait KernelOperations<T, F>
     where T: FromPrimitive,
           F: GenericImage + GenericImageView
     {
 
         // test that the size conforms to kernel: u32 size
-    fn get_kernel_locators(&self, start_pos: &[usize; 2]) -> Vec<[usize; 2]> {
+    fn get_kernel_locators(&self, start_pos: [usize; 2]) -> Vec<[usize; 2]> {
         let mut kern : Vec<[usize; 2]> = Vec::new();
         for outer_num in 0..self.kernel {
             for inner_num in 0..self.kernel {
@@ -44,6 +51,19 @@ impl Kernel {
     }
     pub fn kernel(&self) -> u32{
         self.kernel
+    }
+
+    fn to_binary(&self)-> BinaryKernel{
+        let capacity = self.kernel as usize *  self.kernel as usize;
+        let mut matrix: Vec<Vec<bool>> = Vec::with_capacity(capacity);
+        for _ in 0..self.kernel {
+            let mut inner: Vec<bool> = Vec::with_capacity(self.kernel as usize);
+            for _ in 0..self.kernel {
+                inner.push(0 as bool);
+            outer_vec.push(inner);
+            }
+        }
+        BinaryKernel {matrix}
     }
 }
 
@@ -74,7 +94,7 @@ impl KernelOperations<u8, &DynamicImage> for Kernel {
 
 impl CharCell {
                                                         //image::new(PATH)          to_luma
-    fn new(kernel: Kernel, start_pos: &[usize; 2], image: &DynamicImage, grey_img: &ImageLuma8, ascii: &Vec<char>) -> Self {
+    pub fn new(kernel: Kernel, start_pos: [usize; 2], image: &DynamicImage, grey_img: &ImageLuma8, ascii: &[char;11]) -> Self {
         locators = kernel.get_kernel_locators(start_pos);
         let (x, y) = locators[0];
         let x = (x + kernel.kernel()) / 9;

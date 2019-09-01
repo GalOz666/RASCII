@@ -1,6 +1,8 @@
 use image::{self, imageops::blur, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba, GrayImage,
 FilterType::*};
 use math::round;
+use crate::structs::Kernel;
+
 pub mod structs;
 
 
@@ -27,7 +29,7 @@ pub fn initial_image_processing(path: &str, kernel: &structs::Kernel) -> (Dynami
 
 }
 
-pub fn grey_to_ascii(color: u8, ascii: Vec<char>) -> char {
+pub fn grey_to_ascii(color: u8, ascii: &[char;11]) -> char {
     let ascii_len = ascii.len();
     let metre = 255/ascii_len;
     let value = color as f64 / metre as f64;
@@ -39,4 +41,12 @@ pub fn write_to_term(char_cell: structs::CharCell){
     ()
 }
 
+pub fn highpass_filter(image: DynamicImage) -> DynamicImage {
+    small: f32 = -1.0/9.0;
+    big: f32 = 8.0/9.0;
+    image.filter3x3([small, small, small, small, big, small, small, small, small])
+}
 
+pub fn get_approximate_shape_from_kernel(kernel: Kernel, binary_kernel: Vec<Vec<bool>>){
+    ()
+}
