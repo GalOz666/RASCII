@@ -1,5 +1,5 @@
 use image::{self, imageops::blur, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba, GrayImage,
-FilterType::*};
+FilterType::*;
 use math::round;
 use crate::structs::Kernel;
 
@@ -20,16 +20,16 @@ pub fn initial_image_processing(path: &str, kernel: &structs::Kernel) -> (Dynami
     let w: u32 = if dimensions.0 > MAX_CHARS as u32 * kern_factor {
         MAX_CHARS as u32 * kern_factor
     } else {
-        (dimensions.0 - (dimensions.0%kern_factor)).parse()
+        (dimensions.0 - (dimensions.0%kern_factor))
     };
     let h = dimensions.1 - (dimensions.1%kern_factor);
     let cropped_rgb: DynamicImage  = img.resize(w , h,  Gaussian);
-    let cropped_grey: GrayImage  = cropped_rgb.to_luma;
+    let cropped_grey: GrayImage  = cropped_rgb.to_luma();
     (cropped_rgb, cropped_grey)
 
 }
 
-pub fn grey_to_ascii(color: u8, ascii: &[char;11]) -> char {
+pub fn grey_to_ascii(color: Luma<u8>, ascii: &[char;11]) -> char {
     let ascii_len = ascii.len();
     let metre = 255/ascii_len;
     let value = color as f64 / metre as f64;
