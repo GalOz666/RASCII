@@ -1,6 +1,6 @@
 use image::{self, imageops::blur, GenericImage, DynamicImage::{self, *}, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, GrayImage, ImageLuma8, Rgba, Luma};
-use crate::grey_to_ascii;
 use counter::Counter;
+use RASCII::grey_to_ascii;
 
 pub struct CharCell {
     x: u32,
@@ -34,8 +34,8 @@ impl Kernel {
             let mut inner: Vec<bool> = Vec::with_capacity(self.kernel() as usize);
             for _ in 0..self.kernel() {
                 inner.push(false);
-                matrix.push(inner);
             }
+        matrix.push(inner);
         }
         BinaryKernel::new(matrix)
     }
@@ -81,13 +81,14 @@ impl Kernel {
     fn dominant_color_by_kernel(&self, kernel_locator: &Vec<[u32; 2]>, image: &DynamicImage) -> Vec<u8> {
         let colors: Vec<Vec<u8>> = self.kernel_colors(kernel_locator, image);
         let counter: Counter<_, u8> = colors.iter().collect();
-        counter[&0][0]
+        let f = counter.most_common_ordered();
+        f[0].0.to_vec()
     }
     fn dominant_grey_by_kernel(&self, kernel_locator: &Vec<[u32; 2]>, image: &DynamicImage) -> u8 {
-        let grey_img = image.to_luma();
         let colors: Vec<u8> = self.kernel_greys(kernel_locator, image);
         let counter: Counter<_, u8> = colors.iter().collect();
-        counter[&0][0]
+        let f = counter.most_common_ordered();
+        *f[0].0
     }
 
     pub fn to_char_cell(&self, start_pos: &[u32; 2], image: &DynamicImage, ascii: &[char]) -> CharCell {
@@ -97,7 +98,7 @@ impl Kernel {
         let color = self.dominant_color_by_kernel(&locators, image);
         let grey_color = self.dominant_grey_by_kernel(&locators, image);
         let ascii = grey_to_ascii(grey_color, ascii);
-        return CharCell { x, y, color, ascii }
+        return CharCell { x, y, color: color.to_vec(), ascii }
     }
 }
 
