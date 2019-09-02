@@ -1,5 +1,5 @@
 [package]
-name = "pixelrust"
+name = "RASCII"
 version = "0.1.0"
 authors = ["commodor64", "galoz666"]
 edition = "2018"

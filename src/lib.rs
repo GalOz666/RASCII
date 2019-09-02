@@ -1,14 +1,12 @@
 use image::{self, imageops::blur, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba, GrayImage,
 FilterType::*};
 use math::round;
-use crate::structs::Kernel;
-
-pub mod structs;
+use self::structs::{Kernel, CharCell};
 
 
 const MAX_CHARS: u16 = 80;
 
-pub fn initial_image_processing(path: &str, kernel: &structs::Kernel) -> (DynamicImage, GrayImage) {
+pub fn initial_image_processing(path: &str, kernel: Kernel) -> (DynamicImage, GrayImage) {
     // add error handling
     let kern_factor = kernel.kernel();
 
@@ -37,7 +35,7 @@ pub fn grey_to_ascii(color: u8, ascii: &[char]) -> char {
     ascii[index as usize]
 }
 
-pub fn write_to_term(char_cell: structs::CharCell){
+pub fn write_to_term(char_cell: CharCell){
     ()
 }
 
