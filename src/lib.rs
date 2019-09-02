@@ -25,7 +25,7 @@ pub fn initial_image_processing(path: &str, kernel: &structs::Kernel) -> (Dynami
     let h = dimensions.1 - (dimensions.1%kern_factor);
     let cropped_rgb: DynamicImage  = img.resize(w , h,  Gaussian);
     let cropped_grey: GrayImage  = cropped_rgb.to_luma;
-    (cropped_img, cropped_grey)
+    (cropped_rgb, cropped_grey)
 
 }
 
@@ -34,7 +34,7 @@ pub fn grey_to_ascii(color: u8, ascii: &[char;11]) -> char {
     let metre = 255/ascii_len;
     let value = color as f64 / metre as f64;
     let index = round::floor(value, 0);
-    ascii[index as uzie]
+    ascii[index as usize]
 }
 
 pub fn write_to_term(char_cell: structs::CharCell){

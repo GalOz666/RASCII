@@ -12,10 +12,10 @@ fn main() {
     args = args().collect();
     /// create Dynamic image
     kernel = structs::Kernel::new(9);
-//    img: DynamicImage = image::open(&args[1]).unwrap();
+    let img: DynamicImage = image::open(&args[1]).unwrap();
 //    grey: GrayImage = img.to_luma();
-    char_cell = structs::CharCell::new(&kernel, [0 as usize ,0 as usize],
-                                       &img, &grey, &ASCII_CHARS)
+    char_cell = structs::CharCell::new(&kernel, [0, 0],
+                                       &img, &ASCII_CHARS);
 
  // spawn threads to handle pixle analysis and produce terminal cells
 
