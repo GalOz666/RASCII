@@ -72,28 +72,38 @@ impl KernelOperations for Kernel {
         let mut colors = Vec::with_capacity(self.kernel() as usize);
 
         for loc in kernel_locator {
-            let pixel = match image {
-                Rgba(img) => img.get_pixel(loc[0], loc[1]),
-                _ => panic!("Supports only RGBA!")
-                };
-            if let Rgba(color) = pixel {
-                 colors.push(color.to_vec())
-                }
+            let pixel = image.get_pixel(loc[0], loc[1]);
+            if let Rgba(img) =  pixel {
+                colors.push(img.to_vec());
+            };
         }
         colors
     }
     fn kernel_greys(&self, kernel_locator: &Vec<[u32; 2]>, image: &DynamicImage) -> Vec<u8> {
+        assert_eq!(kernel_locator.len() as u32,  self.kernel());
+        let image = image.to_luma();
+        let mut colors = Vec::with_capacity(self.kernel() as usize);
 
-
+        for loc in kernel_locator {
+            let pixel = image.get_pixel(loc[0], loc[1]);
+            if let Luma(img) =  pixel {
+                colors.push(img[0]);
+            };
+        }
+        colors
     }
+
 
     fn dominant_color_by_kernel(&self, kernel_locator: &Vec<[u32; 2]>, image: &DynamicImage) -> Vec<u8> {
         let colors: Vec<Vec<u8>> = self.kernel_colors(kernel_locator, image);
-        let counter: Counter<_, i8> = colors.collect();
+        let counter: Counter<_, u8> = colors.collect();
         counter[0][0]
     }
     fn dominant_grey_by_kernel(&self, kernel_locator: &Vec<[u32; 2]>, image: &DynamicImage) -> u8 {
         grey_img = image.to_luma();
+        let colors: Vec<u8> = self.kernel_greys(kernel_locator, image);
+        let counter: Counter<_, u8> = colors.collect();
+        counter[0][0]
 
     }
 }
