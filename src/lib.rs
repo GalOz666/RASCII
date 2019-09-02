@@ -1,5 +1,5 @@
 use image::{self, imageops::blur, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba, GrayImage,
-FilterType::*;
+FilterType::*};
 use math::round;
 use crate::structs::Kernel;
 
@@ -29,7 +29,7 @@ pub fn initial_image_processing(path: &str, kernel: &structs::Kernel) -> (Dynami
 
 }
 
-pub fn grey_to_ascii(color: Luma<u8>, ascii: &[char;11]) -> char {
+pub fn grey_to_ascii(color: u8, ascii: &[char]) -> char {
     let ascii_len = ascii.len();
     let metre = 255/ascii_len;
     let value = color as f64 / metre as f64;
