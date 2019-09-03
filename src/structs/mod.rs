@@ -1,6 +1,6 @@
 use image::{self, imageops::blur, GenericImage, DynamicImage::{self, *}, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, GrayImage, ImageLuma8, Rgba, Luma};
 use counter::Counter;
-use RASCII::grey_to_ascii;
+use crate::grey_to_ascii;
 
 pub struct CharCell {
     x: u32,
@@ -59,7 +59,10 @@ impl Kernel {
             let pixel = image.get_pixel(loc[0], loc[1]);
             if let Rgba(img) = pixel {
                 colors.push(img.to_vec());
+            } else {
+                panic!("something went wrong with the pixel!")
             };
+
         }
         colors
     }

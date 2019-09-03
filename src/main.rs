@@ -1,10 +1,7 @@
 use std::env::args;
 use image;
 use image::{DynamicImage, GrayImage};
-
-pub mod structs;
-pub mod lib;
-
+use RASCII::structs;
 
 const ASCII_CHARS: [char;11] = [':', '8', '%', '=', ',', '@', '.', 'X', '&', '~', 'S'];
 
@@ -13,7 +10,7 @@ fn main() {
     let args: Vec<String> = args().collect();
     // create Dynamic image
     let kernel = structs::Kernel::new(9);
-    let img: DynamicImage = image::open(args[1]).unwrap();
+    let img: DynamicImage = image::open(&args[1]).unwrap();
 //    grey: GrayImage = img.to_luma();
 
 

@@ -1,7 +1,8 @@
+pub mod structs;
 use image::{self, imageops::blur, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba, GrayImage,
 FilterType::*};
 use math::round;
-use self::structs::{Kernel, CharCell};
+use structs::{Kernel, CharCell};
 
 
 const MAX_CHARS: u16 = 80;
