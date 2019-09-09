@@ -5,9 +5,9 @@ use math::round;
 use structs::{Kernel, CharCell};
 
 
-const MAX_CHARS: u16 = 80;
+const MAX_CHARS: u16 = 100;
 
-pub fn initial_image_processing(path: &str, kernel: Kernel) -> (DynamicImage, GrayImage) {
+pub fn initial_image_processing(path: &str, kernel: Kernel) -> (DynamicImage, GrayImage, (u32, u32)) {
     // add error handling
     let kern_factor = kernel.kernel();
 
@@ -24,7 +24,7 @@ pub fn initial_image_processing(path: &str, kernel: Kernel) -> (DynamicImage, Gr
     let h = dimensions.1 - (dimensions.1%kern_factor);
     let cropped_rgb: DynamicImage  = img.resize(w , h,  Gaussian);
     let cropped_grey: GrayImage  = cropped_rgb.to_luma();
-    (cropped_rgb, cropped_grey)
+    (cropped_rgb, cropped_grey, (dimensions.0, dimensions.1))
 
 }
 
