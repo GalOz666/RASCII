@@ -5,70 +5,89 @@ use RASCII::{structs, initial_image_processing};
 use tuikit::term::{Term, TermHeight};
 use tuikit::event::{Event, Key};
 use std::{thread, time};
-use std::time::Duration;
 use std::sync::mpsc::channel;
-use RASCII::structs::Kernel;
+use RASCII::structs::{Kernel, CharCell};
 use std::sync::Arc;
-
-#[macro_use]
-extern crate lazy_static;
+use tuikit::attr::*;
+use std::time::{Duration, Instant};
+use tuikit::screen::Screen;
+use tuikit::canvas::Canvas;
 
 const ASCII_CHARS: [char;11] = [':', '8', '%', '=', ',', '@', '.', 'X', '&', '~', 'S'];
 
 fn main() {
-    let thread_count: u32 = 10;
-    // get path fron env
     let args: Vec<String> = args().collect();
-    // create Dynamic image
+    let thread_count: u32 = match args.get(2) {
+        Some(num) => num.parse().unwrap(),
+        None => 4
+    };
     let kernel = structs::Kernel::new(9);
-    assert_eq!(args.len(), 2 as usize, "file path was not provided!");
-    let img: DynamicImage  =  image::open(&args[1]).unwrap();
+    assert!(args.len() as usize >= 2, "file path was not provided!");
 
+    let (rgb, (width, height)) = initial_image_processing(&args[1], &kernel);
 
-    let cell = kernel.to_char_cell(&[0,0], &img, &ASCII_CHARS);
-//    println!("{:?}, {:?}, {:?}, {:?},", cell.x, cell.y, cell.color, cell.ascii);
-    let (rgb, grey, (width, height)) = initial_image_processing(&args[1], kernel);
-    let term = Term::new().unwrap();
-
-
-
-    let term = Term::with_height(TermHeight::Percent(100)).unwrap();
-    term.show_cursor(false);
     // move to thread!
     let (tx, rx) = channel();
-    for num in 1..thread_count+1 {
+    let width = Arc::new(width);
+    let height = Arc::new(height);
+    let img = Arc::new(rgb);
+    let mut handles = Vec::with_capacity(thread_count as usize);
+
+    for num in 0..thread_count {
         let tx_c = tx.clone();
-        let mut current_point = [num, 0 as u32];
+        let mut current_point = [0, num * kernel.kernel()];
         let kernel = Kernel::new(9);
-        let width = Arc::new(width);
-        let height = Arc::new(height);
-        let img = Arc::new(&img);
-        thread::spawn(move|| {
-            loop {
-                if current_point[1] > *height {
-                    break
-                }
-                tx_c.send(kernel.to_char_cell(&current_point, *img, &ASCII_CHARS)).unwrap();
-                current_point = if current_point[0]+kernel.kernel() > *width {
-                    [current_point[0], current_point[1]+kernel.kernel()]
+        let width = Arc::clone(&width);
+        let height = Arc::clone(&height);
+        let img = Arc::clone(&img);
+        handles.push(thread::spawn(move || {
+            while current_point[1] < *height {
+//                println!("thread number: {:?} | point proceesed {:?}\n w:{:?}, h:{:?}" ,num, current_point, width, height);
+
+                let cell = kernel.to_char_cell(&current_point, &*img, &ASCII_CHARS);
+//
+                tx_c.send(cell).unwrap();
+
+                current_point = if current_point[0] + kernel.kernel() < *width {
+                    [current_point[0] + kernel.kernel(), current_point[1]]
                 } else {
-                    [current_point[0]+kernel.kernel()*num, 0]
+                    [0, current_point[1] + (kernel.kernel())]
                 };
             }
-
-        });
+        }));
     }
+    drop(tx);
+    let mut term = Term::new().unwrap();
+    let _ = term.show_cursor(false);
+//    println!("time for reciev!");
+    let mut cells: Vec<CharCell> = Vec::new();
 
-    for cell in rx.recv() {
-        term.print_with_attr(cell.x, cell.y, &cell.ascii.to_string(), cell.color);
-
-    }
+    for cell in rx {
+        cells.push(cell);
+//        for p_cell in &cells {
+//            let _ = term.print_with_attr(p_cell.x, p_cell.y, &p_cell.ascii.to_string(),
+//                                         Attr {
+//                                             fg: p_cell.color,
+//                                             bg: Color::BLACK,
+//                                             ..Attr::default()
+//                                         }).unwrap();
+//        }
+//        let _ = term.present();
+        }
 
     while let Ok(ev) = term.poll_event() {
-    if let Event::Key(Key::Char('q')) = ev {
-        break;
+        if let Event::Key(Key::Char('q')) = ev  {
+            break;
+        }
+        for p_cell in &cells {
+            let _ = term.print_with_attr(p_cell.x, p_cell.y, &p_cell.ascii.to_string(),
+                                         Attr {
+                                             fg: p_cell.color,
+                                             bg: Color::BLACK,
+                                             ..Attr::default()
+                                         }).unwrap();
+        }
+        let _ = term.present();
+
     }
-        term.present();
-}
- // write to screen at the correct sequence and\or save to file
 }
