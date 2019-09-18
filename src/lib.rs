@@ -3,16 +3,16 @@ use image::{self, imageops::blur, GenericImage, DynamicImage, ImageDecoder, Imag
 FilterType::*};
 use math::round;
 use structs::{Kernel, CharCell};
+use std::time::{Duration, Instant};
 
+const MAX_CHARS: u16 = 100;
 
-const MAX_CHARS: u16 = 80;
-
-pub fn initial_image_processing(path: &str, kernel: Kernel) -> (DynamicImage, GrayImage) {
+pub fn initial_image_processing(path: &str, kernel: &Kernel) -> (DynamicImage, (u32, u32)) {
     // add error handling
     let kern_factor = kernel.kernel();
-
     let img = image::open(&path).unwrap().blur(5.0);
     // get side and see that it fits with kernel:
+
     let dimensions = image::image_dimensions(&path).unwrap();
     // i.e., if the size of the picture will be bigger than the maximum amount of characters in the terminal
 
@@ -22,9 +22,9 @@ pub fn initial_image_processing(path: &str, kernel: Kernel) -> (DynamicImage, Gr
         (dimensions.0 - (dimensions.0%kern_factor))
     };
     let h = dimensions.1 - (dimensions.1%kern_factor);
-    let cropped_rgb: DynamicImage  = img.resize(w , h,  Gaussian);
-    let cropped_grey: GrayImage  = cropped_rgb.to_luma();
-    (cropped_rgb, cropped_grey)
+
+    let cropped_rgb: DynamicImage  = img.thumbnail_exact(w , h);
+    (cropped_rgb, (w, h))
 
 }
 
