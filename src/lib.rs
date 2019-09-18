@@ -5,7 +5,7 @@ use math::round;
 use structs::{Kernel, CharCell};
 use std::time::{Duration, Instant};
 
-const MAX_CHARS: u16 = 100;
+const MAX_CHARS: u16 = 200;
 
 pub fn initial_image_processing(path: &str, kernel: &Kernel) -> (DynamicImage, (u32, u32)) {
     // add error handling
