@@ -1,8 +1,9 @@
-use image::{self, imageops::blur, GenericImage, DynamicImage::{self, *}, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, GrayImage, ImageLuma8, Rgba, Luma};
-use counter::Counter;
-use crate::grey_to_ascii;
-use tuikit::attr::Color;
 use std::time::Instant;
+
+use counter::Counter;
+use image::{self, DynamicImage::{self, *}, GenericImage, GenericImageView, GrayImage, ImageBuffer, ImageDecoder, ImageLuma8, imageops::blur, Luma, Rgb, Rgba, RgbImage};
+
+use crate::grey_to_ascii;
 
 pub struct CharCell {
     pub x: usize,
