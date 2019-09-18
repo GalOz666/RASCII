@@ -2,11 +2,12 @@ use image::{self, imageops::blur, GenericImage, DynamicImage::{self, *}, ImageDe
 use counter::Counter;
 use crate::grey_to_ascii;
 use tuikit::attr::Color;
+use std::time::Instant;
 
 pub struct CharCell {
     pub x: usize,
     pub y: usize,
-    pub color: Color,
+    pub color: (u8, u8, u8),
     pub ascii: char
 }
 
@@ -84,6 +85,7 @@ impl Kernel {
     }
 
     pub fn to_char_cell(&self, start_pos: &[u32; 2], image:  &DynamicImage, ascii: &[char]) -> CharCell {
+
         let x  = (start_pos[0] as f64 / self.kernel() as f64);
         let y = (start_pos[1] as f64 / self.kernel() as f64);
         assert_eq!(x.trunc(), x, "x start position does not conform to kernel size");
@@ -94,6 +96,7 @@ impl Kernel {
         let color = self.dominant_color_by_kernel(&locators, image);
         let grey_color = self.dominant_grey_by_kernel(&locators, image);
         let ascii = grey_to_ascii(grey_color, ascii);
-        return CharCell { x, y , color: Color::Rgb(color[0], color[1], color[2]), ascii }
+
+        return CharCell { x, y , color: (color[0], color[1], color[2]), ascii }
     }
 }
