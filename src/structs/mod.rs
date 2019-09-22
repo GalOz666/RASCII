@@ -27,6 +27,8 @@ impl Kernel {
     fn get_kernel_locators(&self, start_pos: &[u32; 2]) -> Vec<[u32; 2]> {
         let mut kern: Vec<[u32; 2]> = Vec::new();
         let num = (self.kernel() as f64).sqrt() as u32;
+        assert_eq!(num as f64, (self.kernel() as f64).sqrt(),
+        "kernel needs to have a non float square root!");
         for outer_num in 0..num {
             for inner_num in 0..num {
                 kern.push([start_pos[0] + outer_num, start_pos[1] + inner_num]);
@@ -38,7 +40,7 @@ impl Kernel {
 
     fn kernel_colors(&self, kernel_locator: &Vec<[u32; 2]>, image: &DynamicImage) -> Vec<Vec<u8>> {
         assert_eq!(kernel_locator.len() as u32, self.kernel(),
-                   "kernel locator lenght and actual kernel value are not the same!");
+                   "kernel locator length and actual kernel value are not the same!");
         let mut colors = Vec::with_capacity(self.kernel() as usize);
 
         for loc in kernel_locator {
