@@ -1,13 +1,12 @@
+#![allow(non_snake_case)]
+
 use std::env::args;
 use std::io;
 use std::io::Write;
-use std::time::Instant;
 
 use ansi_term::Colour::RGB;
-use image::{self, DynamicImage, GrayImage};
 
 use RASCII::{initial_image_processing, structs};
-use RASCII::structs::{CharCell, Kernel};
 
 const ASCII_CHARS: [char;11] = [':', '8', '%', '=', ',', '@', '.', 'X', '&', '~', 'S'];
 
@@ -26,10 +25,10 @@ fn main() {
         let (r, g, b) = cell.color;
         let ascii  = RGB(r, g, b).paint(cell.ascii.to_string());
         current_point = if current_point[0] + kernel.kernel() < width {
-            write!(lock, "{}", ascii);
+            write!(lock, "{}", ascii).unwrap();
             [current_point[0] + kernel.kernel(), current_point[1]]
         } else {
-            writeln!(lock, "{}", ascii);
+            writeln!(lock, "{}", ascii).unwrap();
             [0, current_point[1] + (kernel.kernel())]
         };
     }

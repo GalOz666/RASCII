@@ -1,7 +1,5 @@
-use std::time::Instant;
-
 use counter::Counter;
-use image::{self, DynamicImage::{self, *}, GenericImage, GenericImageView, GrayImage, ImageBuffer, ImageDecoder, ImageLuma8, imageops::blur, Luma, Rgb, Rgba, RgbImage};
+use image::{self, DynamicImage, GenericImageView, Luma, Rgba};
 
 use crate::grey_to_ascii;
 
@@ -40,16 +38,13 @@ impl Kernel {
 
     fn kernel_colors(&self, kernel_locator: &Vec<[u32; 2]>, image: &DynamicImage) -> Vec<Vec<u8>> {
         assert_eq!(kernel_locator.len() as u32, self.kernel(),
-        "kernel locator lenght and actual kernel value are not the same!");
+                   "kernel locator lenght and actual kernel value are not the same!");
         let mut colors = Vec::with_capacity(self.kernel() as usize);
 
         for loc in kernel_locator {
             let pixel = image.get_pixel(loc[0], loc[1]);
-            if let Rgba(img) = pixel {
-                colors.push(img.to_vec());
-            } else {
-                panic!("something went wrong with the pixel!")
-            };
+            let Rgba(img) = pixel;
+            colors.push(img.to_vec())
 
         }
         colors
@@ -62,11 +57,9 @@ impl Kernel {
 
         for loc in kernel_locator {
             let pixel = image.get_pixel(loc[0], loc[1]);
-            if let Luma(img) = pixel {
-                colors.push(img[0]);
-            } else {
-                panic!("something went wrong with the pixel!")
-            };
+            let Luma(img) = pixel;
+            colors.push(img[0]);
+
         }
         colors
     }
@@ -87,8 +80,8 @@ impl Kernel {
 
     pub fn to_char_cell(&self, start_pos: &[u32; 2], image:  &DynamicImage, ascii: &[char]) -> CharCell {
 
-        let x  = (start_pos[0] as f64 / self.kernel() as f64);
-        let y = (start_pos[1] as f64 / self.kernel() as f64);
+        let x  = start_pos[0] as f64 / self.kernel() as f64;
+        let y = start_pos[1] as f64 / self.kernel() as f64;
         assert_eq!(x.trunc(), x, "x start position does not conform to kernel size");
         assert_eq!(y.trunc(), y, "y start position does not conform to kernel size");
         let x = x as usize;
