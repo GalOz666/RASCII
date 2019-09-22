@@ -1,9 +1,9 @@
-pub mod structs;
-use image::{self, imageops::blur, GenericImage, DynamicImage, ImageDecoder, ImageBuffer, GenericImageView, Rgb, RgbImage, Rgba, GrayImage,
-FilterType::*};
+use image::{self, DynamicImage};
 use math::round;
-use structs::{Kernel, CharCell};
-use std::time::{Duration, Instant};
+
+use structs::Kernel;
+
+pub mod structs;
 
 const MAX_CHARS: u16 = 200;
 
@@ -34,18 +34,4 @@ pub fn grey_to_ascii(color: u8, ascii: &[char]) -> char {
     let value = color as f64 / metre as f64;
     let index = round::floor(value, 0);
     ascii[index as usize]
-}
-
-pub fn write_to_term(char_cell: CharCell){
-    ()
-}
-
-pub fn highpass_filter(image: DynamicImage) -> DynamicImage {
-    let small: f32 = -1.0/9.0;
-    let big: f32 = 8.0/9.0;
-    image.filter3x3(&[small, small, small, small, big, small, small, small, small])
-}
-
-pub fn get_approximate_shape_from_kernel(kernel: Kernel, binary_kernel: Vec<Vec<bool>>){
-    ()
 }
