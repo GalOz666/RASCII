@@ -25,10 +25,10 @@ fn main() {
         let (r, g, b) = cell.color;
         let ascii  = RGB(r, g, b).paint(cell.ascii.to_string());
         current_point = if current_point[0] + kernel.kernel() < width {
-            write!(lock, "{}", ascii).unwrap();
+            write!(lock, "{} ", ascii).unwrap();
             [current_point[0] + kernel.kernel(), current_point[1]]
         } else {
-            writeln!(lock, "{}", ascii).unwrap();
+            writeln!(lock, "{} ", ascii).unwrap();
             [0, current_point[1] + (kernel.kernel())]
         };
     }
