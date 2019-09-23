@@ -32,6 +32,6 @@ pub fn grey_to_ascii(color: u8, ascii: &[char]) -> char {
     let ascii_len = ascii.len()-1;
     let metre = 255/ascii_len;
     let value = color as f64 / metre as f64;
-    let index = round::floor(value, 0);
+    let index = round::half_away_from_zero(value, 0);
     ascii[index as usize]
 }
