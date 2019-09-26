@@ -16,11 +16,12 @@ fn main() {
     assert!(args.len() as usize >= 2, "file path was not provided!");
     let (img, (width, height)) = initial_image_processing(&args[1], &kernel);
     let mut current_point = [0, 0];
+    let grey = img.to_luma();
     let stdout = io::stdout();
     let mut lock = stdout.lock();
     while current_point[1] < height {
 
-        let cell = kernel.to_char_cell(&current_point, &img, &ASCII_CHARS);
+        let cell = kernel.to_char_cell(&current_point, &img, &grey, &ASCII_CHARS);
 
         let (r, g, b) = cell.color;
         let ascii  = RGB(r, g, b).paint(cell.ascii.to_string());
