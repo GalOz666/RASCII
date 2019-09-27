@@ -6,18 +6,18 @@ use image::{self, DynamicImage, GenericImageView, GrayImage, Luma, Rgba};
 
 use crate::grey_to_ascii;
 
-pub struct CharCell<'q> {
+pub struct CharCell {
 
     pub color: (u8, u8, u8),
-    pub ascii: &'q char,
+    pub ascii: char,
 
 }
 
-#[derive(Debug, Ord, PartialOrd, Eq, PartialEq)]
+#[derive(Debug)]
 pub struct Kernel {
 
     kernel: u32,
-    _cache: HashMap<u8, &'static char>,
+    _cache: HashMap<u8, char>,
 
 }
 
@@ -98,8 +98,8 @@ impl Kernel {
             Some(asci) => *asci,
             None => {
                 let a = grey_to_ascii(grey_color, ascii_list);
-                self._cache[&grey_color] = a;
-                a
+                self._cache.insert(grey_color, a);
+                *self._cache.get(&grey_color).unwrap()
             }
         };
         return CharCell { color: (color[0], color[1], color[2]), ascii }
