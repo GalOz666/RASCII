@@ -1,4 +1,3 @@
-use std::cmp::Ord;
 use std::collections::HashMap;
 
 use counter::Counter;
@@ -99,7 +98,7 @@ impl Kernel {
             None => {
                 let a = grey_to_ascii(grey_color, ascii_list);
                 self._cache.insert(grey_color, a);
-                *self._cache.get(&grey_color).unwrap()
+                self._cache.get(&grey_color).unwrap().clone()
             }
         };
         return CharCell { color: (color[0], color[1], color[2]), ascii }
