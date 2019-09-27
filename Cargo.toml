@@ -1,5 +1,5 @@
 [package]
-name = "RASCII"
+name = "rascii"
 version = "0.1.0"
 authors = ["galoz666"]
 edition = "2018"
@@ -15,3 +15,6 @@ counter = "0.4.3"
 libmath = "0.2.1"
 cute = "0.3.0"
 ansi_term = "0.12.1"
+
+[profile.release]
+lto = true
