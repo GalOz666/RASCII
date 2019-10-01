@@ -6,13 +6,18 @@ use ansi_term::Colour::RGB;
 
 use rascii::{initial_image_processing, structs};
 
+const DEFAULT_KERN: u32 =  9;
 static ASCII_CHARS: [char;11] = [':', '8', '%', '=', ',', '@', '.', 'X', '&', '~', 'S'];
 
 fn main() {
     // todo: screen resolution optimization (add " " to normal screen - "" to small screen)
     let args: Vec<String> = args().collect();
-    let mut kernel = structs::Kernel::new(9);
     assert!(args.len() as usize >= 2, "file path was not provided!");
+    let kern_arg: u32 = match args.get(2){
+        Some(num) => num.parse().expect("invalid kernel number!"),
+        None => DEFAULT_KERN
+    };
+    let mut kernel = structs::Kernel::new(kern_arg);
     let (img, (width, height)) = initial_image_processing(&args[1], &kernel);
     let mut current_point = [0, 0];
     let grey = img.to_luma();
