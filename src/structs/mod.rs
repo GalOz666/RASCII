@@ -83,7 +83,7 @@ impl Kernel {
         *f[0].0
     }
 
-    pub fn to_char_cell(&mut self, start_pos: &[u32; 2], image:  &DynamicImage, grey: &GrayImage, ascii_list: &'static [char]) -> CharCell {
+    pub fn get_char_cell(&mut self, start_pos: &[u32; 2], image:  &DynamicImage, grey: &GrayImage, ascii_list: &'static [char]) -> CharCell {
 
         let x  = start_pos[0] as f64 / self.kernel() as f64;
         let y = start_pos[1] as f64 / self.kernel() as f64;

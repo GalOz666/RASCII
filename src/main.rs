@@ -28,7 +28,7 @@ fn main() {
     let mut current_point = [0, 0];
     let grey = img.to_luma();
     while current_point[1] < height {
-        let cell = kernel.to_char_cell(&current_point, &img, &grey, &ASCII_CHARS);
+        let cell = kernel.get_char_cell(&current_point, &img, &grey, &ASCII_CHARS);
         let (r, g, b) = cell.color;
         let ascii  = RGB(r, g, b).paint(cell.ascii.to_string());
         current_point = if current_point[0] + kernel.kernel() < width {
