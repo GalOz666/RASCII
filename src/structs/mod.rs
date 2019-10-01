@@ -5,10 +5,10 @@ use image::{self, DynamicImage, GenericImageView, GrayImage, Luma, Rgba};
 
 use crate::grey_to_ascii;
 
-pub struct CharCell {
+pub struct CharCell<'a> {
 
     pub color: (u8, u8, u8),
-    pub ascii: char,
+    pub ascii:  &'a mut char,
 
 }
 
@@ -93,14 +93,10 @@ impl Kernel {
         let color = self.dominant_color_by_kernel(&locators, image);
         let grey_color = self.dominant_grey_by_kernel(&locators, grey);
         // caching unknown / fetching known results:
-        let ascii = match self._cache.get(&grey_color) {
-            Some(asci) => *asci,
-            None => {
-                let a = grey_to_ascii(grey_color, ascii_list);
-                self._cache.insert(grey_color, a);
-                self._cache.get(&grey_color).unwrap().clone()
-            }
-        };
-        return CharCell { color: (color[0], color[1], color[2]), ascii }
+        let ascii = self._cache
+                .entry(grey_color)
+                .or_insert_with(|| grey_to_ascii(grey_color, ascii_list));
+
+        CharCell { color: (color[0], color[1], color[2]), ascii }
     }
 }

@@ -9,6 +9,7 @@ use rascii::{initial_image_processing, structs};
 static ASCII_CHARS: [char;11] = [':', '8', '%', '=', ',', '@', '.', 'X', '&', '~', 'S'];
 
 fn main() {
+    // todo: screen resolution optimization (add " " to normal screen - "" to small screen)
     let args: Vec<String> = args().collect();
     let mut kernel = structs::Kernel::new(9);
     assert!(args.len() as usize >= 2, "file path was not provided!");
